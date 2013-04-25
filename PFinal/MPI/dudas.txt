@@ -1,0 +1,5 @@
+1.- ¿Por qué si reservamos mucha memoria en el array de envío lo hace bien mientras que si ponemos la necesaria lo sobreescribe?
+
+2.- ¿Cómo podemos hacer que ambos procesos tengan los mismos valores en el bucket (o por qué nos da mal con 100 elementos)? (Hacer que cada vez que modificamos el bucket se haga en todos los procesos)
+
+3.- ¿Por qué el programa solamente termina con un número de elementos exponenciales de 10?
