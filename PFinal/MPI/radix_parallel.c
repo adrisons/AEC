@@ -72,8 +72,8 @@ void radixsort_parallel(int* a, int elemTot, int p, int myrank){
 	int rank_send, rank_recv;
 	int n = elemTot/p;
 	int pos_envio = -1;
-	int* b = malloc(n*sizeof(int)*elemTot);
-	int* a_intercambio = malloc(n*sizeof(int)*elemTot);
+	int* b = malloc(sizeof(int)*elemTot);
+	int* a_intercambio = malloc(sizeof(int)*elemTot);
 	int otro_rank = (myrank+1) % p;
 	int iter = 0;
 	MPI_Status status;
@@ -82,55 +82,71 @@ void radixsort_parallel(int* a, int elemTot, int p, int myrank){
 	inicializar_array(&b[0], n, -1);
 	
 	m = maximo(a, n);
+	MPI_Allreduce(&m, &m, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+
 printf("----------------------------------------\n");
 printf("[rank=%d]:",myrank);
 print_array(a,n,1);
 printf("----------------------------------------\n");
 	while (m / exp > 0){
 		printf("[rank=%d] ITERACION %d\n",myrank,iter);
+		
 		int bucket[10] = {0};
+
+		printf("\t[rank=%d] bucket PRINCIPIO: ",myrank);
+		print_array(bucket,10,0);
+		printf("\n");
+
 		// Se calcula el bucket
 		for (i = 0; i < n; i++){
 			bucket[a[i] / exp % 10]++;
 		}
+		printf("\t[rank=%d] bucket LOCAL: ",myrank);
+		print_array(bucket,10,0);
+		printf("\n");		
 
 		// Se comunican los procesadores para tener los mismos valores en bucket
 		MPI_Allreduce(&bucket[0], &bucket[0], 10, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
+
 
 		// Se calculan las frecuencias acumulativas de los elementos del bucket 
 		for (i = 1; i < 10; i++)
 			bucket[i] += bucket[i - 1];
 
+		printf("\t[rank=%d] bucket GLOBAL: ",myrank);
+		print_array(bucket,10,1);
 
 		// Usando el bucket se guardan en b los elementos de a ordenados
 		for (i = n - 1; i >= 0; i--){
 			
 			int pos = (--bucket[a[i] / exp % 10]);
-			
+			MPI_Allreduce(&bucket[0], &bucket[0], 10, MPI_INT, MPI_MIN, MPI_COMM_WORLD);
+		
+		printf("\t[rank=%d] bucket LOCAL: ",myrank);
+		print_array(bucket,10,0);
+		printf("\n");
 
 			rank_recv = floor(pos / n);
+//			printf("	[rank=%d] pos: %d\trank_recv:%d\n",myrank,pos,rank_recv);
+
 			rank_send = myrank;
 
 			if( rank_send == rank_recv ){ 
+				
 				b[ pos ] = a[i];
 			}else{
+
 				// Se adapta la posición para el otro proceso
 				pos_envio = pos % n;
-//				printf("[rank=%d]	pos_envio = (pos=)%d mod %d = %d\n",myrank,pos,n,pos_envio);
-
 				a_intercambio [pos_envio] = a[i];
-//				printf("[rank=%d]	a_intercambio: ",myrank);
-//				print_array(a_intercambio,n,1);
 			}
 		}
-//			printf("[rank=%d]	a_intercambio FUERA: ",myrank);
-//			print_array(a_intercambio,n,1);
 
 		// Se guardan en a los elementos ordenados
-		for (i = 0; i < n; i++){
+/*		for (i = 0; i < n; i++){
 			a[i] = b[i];
 		}
-
+*/
 		if(pos_envio != -1){
 			printf("	[rank=%d]-->>[rank=%d]: ",myrank,otro_rank);
 			print_array(a_intercambio,n,1);
@@ -141,19 +157,12 @@ printf("----------------------------------------\n");
 			printf("	[rank=%d]<<--[rank=%d]: ",myrank,otro_rank);
 			print_array(a_intercambio,n,1);
 		}
-/*
-	if (myrank == 0){
-		MPI_Send(a_intercambio, n, MPI_INT, 1, 3, MPI_COMM_WORLD);
-		MPI_Recv(a_intercambio, n, MPI_INT, 0, 3, MPI_COMM_WORLD, &status);
 
-   	}else{
-		MPI_Send(a_intercambio, n, MPI_INT, 0, 3, MPI_COMM_WORLD);
-    	MPI_Recv(a_intercambio, n, MPI_INT, 1, 3, MPI_COMM_WORLD, &status);
-	}
-
-*/
 
 		for (i = 0; i < n; i++){
+			if(b[i] != -1)
+				a[i] = b[i];
+
 			if(a_intercambio[i]!=-1){
 				a[i] = a_intercambio[i];
 			}
