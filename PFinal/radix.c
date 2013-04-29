@@ -28,6 +28,19 @@ void inicializar_array_random(int * a, int numElementos){
 	}	
 }
 
+void inicializar_a_decreciente(int * a, int n){
+	int i,j=0;
+	int inicio;
+	int fin;
+
+	inicio = n-1;
+	fin = 0;
+	for(i = inicio; i >= fin; i--){
+		a[j] = i;
+		j++;
+	}
+
+}
 
 void radixsor(int* a, int numElementos){
 	int i, m, exp = 1;
@@ -38,7 +51,7 @@ void radixsor(int* a, int numElementos){
 	assert (gettimeofday (&t0, NULL) == 0);
 
 
-	inicializar_array_random(a, numElementos);
+	inicializar_a_decreciente(a, numElementos);
 	printf("a inicial: ");
 	for (i = 0; i < numElementos; i++){
 		printf("%d ", a[i]);
@@ -73,7 +86,7 @@ void radixsor(int* a, int numElementos){
 			b[ pos ] = a[i];
 			int rank_send = (i<numElementos/2)?0:1;
 			int rank_recv = (pos<numElementos/2)?0:1;
-			printf("==>> MPI process rank=%d maps a[%d]=%d  to position b[%d]=%d  ",rank_send,i,a[i],pos,b[pos]);
+			printf("[rank=%d] a[%d]=%d -->> b[%d]=%d  ",rank_send,i,a[i],pos,b[pos]);
 			if( rank_send != rank_recv ) printf("in MPI process rank=%d ",rank_recv);
 			printf("\n");
 		
