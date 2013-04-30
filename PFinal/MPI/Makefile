@@ -3,6 +3,9 @@ default: normal
 normal: compile execute
 
 
+normal2: compile2 execute
+
+
 gdb: compile_gdb execute_gdb
 
 compile_gdb: 

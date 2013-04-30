@@ -38,6 +38,25 @@ void inicializar_array_random(int * a, int numElementos){
 	}	
 }
 
+void inicializar_a_creciente(int * a, int n, int myrank){
+	int i,j=0;
+	int inicio;
+	int fin;
+
+	if(myrank==0){
+		fin = n;
+		inicio = 0;
+	}else{
+		fin = 2*n;
+		inicio = n;		
+	}
+	for(i = inicio; i < fin; i++){
+		a[j] = i;
+		j++;
+	}
+
+}
+
 void inicializar_a_decreciente(int * a, int n, int myrank){
 	int i,j=0;
 	int inicio;
@@ -150,14 +169,18 @@ printf("MAXIMO= %d\n",m);
 //			rank_recv = (pos<n)?0:1;
 
 			rank_recv = floor(pos / n);
-			printf("	[rank=%d] pos: %d\trank_recv:%d\n",myrank,pos,rank_recv);
+			printf("	[rank=%d]  -->  pos %d : rank_recv %d \n",myrank,pos,rank_recv);
 
 			rank_send = myrank;
 
 			if( rank_send == rank_recv ){ 
 				printf("	[rank=%d]  -->  b[%d] = %d \n",myrank,pos,a[i]);
+				if(myrank==1)
+					pos = pos % n;
 				b[ pos ] = a[i];
 			}else{
+				if(myrank==0)
+					pos = pos % n;				
 				printf("	[rank=%d]  -->  a_intercambio[%d] = %d \n",myrank,pos,a[i]);
 				a_intercambio [pos] = a[i];
 			}
@@ -193,13 +216,19 @@ printf("MAXIMO= %d\n",m);
 			inicializar_array(&a_intercambio[0], elemTot, -1);
 		}
 		// Se guardan en a los elementos ordenados
-		for (i = 0; i < n; i++){
-			if(b[i] != -1)
-				a[i] = b[i];
-		}
-		inicializar_array(&b[0], n, -1);
 
 printf("\n");
+		printf("[rank=%d] b = ",myrank);
+		print_array(b,elemTot,1);
+
+		for (i = 0; i < elemTot; i++){
+			if(b[i] != -1){
+//				int pos_a = i % n;
+				a[i] = b[i];
+			}
+		}
+		inicializar_array(&b[0], elemTot, -1);
+
 		printf("[rank=%d] a = ",myrank);
 		print_array(a,n,1);
 printf("\n");
@@ -253,7 +282,7 @@ int main(int argc, char* argv[]){
 
 	int *a = malloc(n*sizeof(int));
 
-	inicializar_a_decreciente(&a[0], n, myrank);
+	inicializar_a_creciente(&a[0], n, myrank);
 
 
 	// Ejecuta el algoritmo de ordenamiento
