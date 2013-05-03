@@ -1,0 +1,2 @@
+numElementos	Tiempo seq(seg:mseg)	Tiempo mpi(seg:mseg)	Speedup
+10000 	0:2				0:2 / 1:75

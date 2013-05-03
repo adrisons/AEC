@@ -104,17 +104,7 @@ void radixsort_parallel(int* a, int elemTot, int p, int myrank){
 	m = maximo(a, n);
 	MPI_Allreduce(&m, &m, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
 
-
-printf("----------------------------------------\n");
-printf("[rank=%d] a inicial:",myrank);
-print_array(a,n,1);
-printf("----------------------------------------\n");
-
-printf("MAXIMO= %d\n",m);
 	while (m / exp > 0){
-
-
-		printf("[rank=%d] ITERACION %d\n",myrank,iter);
 		
 		inicializar_array(bucket,10,0);
 
@@ -122,34 +112,22 @@ printf("MAXIMO= %d\n",m);
 		for (i = 0; i < n; i++){
 			bucket[a[i] / exp % 10]++;
 		}
-		
-		printf("\t[rank=%d] bucket   : ",myrank);
-		print_array(bucket,10,0);
-		printf("\n");
 
 		// Se comunican los procesadores para tener los mismos valores en bucket
 		MPI_Allreduce(&bucket[0], &bucket[0], 10, MPI_INT, MPI_SUM, MPI_COMM_WORLD);
 
-		if(myrank==0){
+		if(myrank==1){
 			// Se calculan las frecuencias acumulativas de los elementos del bucket 
 			for (i = 1; i < 10; i++)
 				bucket[i] += bucket[i - 1];
-//			printf("\t[rank=%d] bucket LOCAL: ",myrank);
-//			print_array(bucket,10,1);
 		}
-		
-		printf("\t[rank=%d] bucket AC: ",myrank);
-		print_array(bucket,10,0);
-		printf("\n");
 
-		// El P1 se queda esperando por los datos del padre
-		if(myrank==1){
-			MPI_Recv(a_intercambio, elemTot, MPI_INT, 0, 3, MPI_COMM_WORLD, &status);
-//			printf("||	[rank=%d]<<--[rank=%d] a_intercambio: ",myrank,0);
-//			print_array(a_intercambio,elemTot,1);
-			MPI_Recv(&bucket[0], 10, MPI_INT, 0, 4, MPI_COMM_WORLD, &status);
-//			printf("||	[rank=%d]<<--[rank=%d] bucket: ",myrank,0);
-//			print_array(bucket,10,1);
+
+		// El P0 se queda esperando por los datos del padre
+		if(myrank==0){
+			MPI_Recv(a_intercambio, elemTot, MPI_INT, 1, 3, MPI_COMM_WORLD, &status);
+			MPI_Recv(&bucket[0], 10, MPI_INT, 1, 4, MPI_COMM_WORLD, &status);
+
 			for(i=0;i<elemTot;i++){
 				if(a_intercambio[i]!=-1){
 					// Se adapta la posición del otro proceso
@@ -166,48 +144,32 @@ printf("MAXIMO= %d\n",m);
 			
 			int pos = (--bucket[a[i] / exp % 10]);
 
-//			rank_recv = (pos<n)?0:1;
-
 			rank_recv = floor(pos / n);
-			printf("	[rank=%d]  -->  pos %d : rank_recv %d \n",myrank,pos,rank_recv);
-
 			rank_send = myrank;
 
 			if( rank_send == rank_recv ){ 
-				printf("	[rank=%d]  -->  b[%d] = %d \n",myrank,pos,a[i]);
 				if(myrank==1)
 					pos = pos % n;
 				b[ pos ] = a[i];
 			}else{
 				if(myrank==0)
 					pos = pos % n;				
-				printf("	[rank=%d]  -->  a_intercambio[%d] = %d \n",myrank,pos,a[i]);
 				a_intercambio [pos] = a[i];
 			}
 		}
 
 		// El P1 envía el array de intercambio al padre para continuar ordenando
-		if(myrank==1){
-			printf("||	[rank=%d] a:",myrank);
-			print_array(a,n,1);
-			printf("||	[rank=%d]-->>[rank=%d] a_intercambio: ",1,0);
-			print_array(a_intercambio,elemTot,1);
-			MPI_Send(a_intercambio, elemTot, MPI_INT, 0, 5, MPI_COMM_WORLD);
+		if(myrank==0){
+			MPI_Send(a_intercambio, elemTot, MPI_INT, 1, 5, MPI_COMM_WORLD);
 		}
 
 
 		// El proceso padre envía los elementos que le corresponden del proceso hijo
-		if(myrank==0){
-			MPI_Send(a_intercambio, elemTot, MPI_INT, 1, 3, MPI_COMM_WORLD);
-			printf("||	[rank=%d]-->>[rank=%d] a_intercambio: ",0,1);
-			print_array(a_intercambio,elemTot,1);
-			MPI_Send(&bucket[0], 10, MPI_INT, 1, 4, MPI_COMM_WORLD);
-			printf("||	[rank=%d]-->>[rank=%d] bucket: ",0,1);
-			print_array(bucket,10,1);
+		if(myrank==1){
+			MPI_Send(a_intercambio, elemTot, MPI_INT, 0, 3, MPI_COMM_WORLD);
+			MPI_Send(&bucket[0], 10, MPI_INT, 0, 4, MPI_COMM_WORLD);
+			MPI_Recv(a_intercambio, elemTot, MPI_INT, 0, 5, MPI_COMM_WORLD, &status);
 
-			MPI_Recv(a_intercambio, elemTot, MPI_INT, 1, 5, MPI_COMM_WORLD, &status);
-			printf("||	[rank=%d]<<--[rank=%d] a_intercambio: ",0,1);
-			print_array(a_intercambio,elemTot,1);
 			for(i=0;i<n;i++){
 				if(a_intercambio[i]!=-1){
 					b[i] = a_intercambio[i];
@@ -216,11 +178,6 @@ printf("MAXIMO= %d\n",m);
 			inicializar_array(&a_intercambio[0], elemTot, -1);
 		}
 		// Se guardan en a los elementos ordenados
-
-printf("\n");
-		printf("[rank=%d] b = ",myrank);
-		print_array(b,elemTot,1);
-
 		for (i = 0; i < elemTot; i++){
 			if(b[i] != -1){
 //				int pos_a = i % n;
@@ -229,15 +186,12 @@ printf("\n");
 		}
 		inicializar_array(&b[0], elemTot, -1);
 
-		printf("[rank=%d] a = ",myrank);
-		print_array(a,n,1);
-printf("\n");
 		exp *= 10;
-		printf("[rank=%d]fin del while...\n",myrank);
 		iter++;
-		
-
 	}
+	free(bucket);
+//	free(b);
+//	free(a_intercambio);
 }
  
  
@@ -256,23 +210,22 @@ int main(int argc, char* argv[]){
 	int numElementos = atoi(argv[1]);
 	int i, p, myrank;
 	MPI_Status status;
+	struct timeval t0, t1, t;
 
-	printf("argc=%d\n",argc);
 	if(argc < 2){
 		printf("Usage: mpirun -n numprocs ./radix numElementos \n");
 		exit(1);
 	}
+
+	assert (gettimeofday (&t0, NULL) == 0);
+
 	// Inicialización de MPI
 	MPI_Init (&argc, &argv);
-
 
 
 	/* myrank will contain the rank of the process
 	MPI_COMM_WORLD is all processors together */
 	MPI_Comm_rank (MPI_COMM_WORLD, &myrank);
-	
-	printf("INICIO...");
-	print_whoami(myrank);
 
 	/* p es el número de procesos */
 	MPI_Comm_size (MPI_COMM_WORLD, &p);
@@ -291,28 +244,26 @@ int main(int argc, char* argv[]){
  
 
 	if (myrank == 0){
-printf("\nRESULTADO:\n");
-printf("----------------------------------------\n");		
-		printf("Padre|Hijo\n");
-		printf("[");
-		print_array(a, n, 0);
-		printf("|");
-    	MPI_Recv(a, n, MPI_INT, 1, 123, MPI_COMM_WORLD, &status);
 
-    	print_array(a, n, 0);
-    	printf("]\n");
-printf("----------------------------------------\n");    	
+//		printf("Sol: \n");
+//		print_array(a, n, 0);
+    	MPI_Recv(a, n, MPI_INT, 1, 123, MPI_COMM_WORLD, &status);
+//    	print_array(a, n, 1);
+
    	}else{
 		MPI_Send(a, n, MPI_INT, 0, 123, MPI_COMM_WORLD);
 	}
-    
 
-	printf("FIN ");
-	print_whoami(myrank);
+	free(a);
 
 	MPI_Finalize ();
 
+	if (myrank == 0){
+		assert (gettimeofday (&t1, NULL) == 0);
+		timersub(&t1, &t0, &t);
+		printf("%ld.%06ld\n", (long int)t.tv_sec, (long int)t.tv_usec);
 
+		//printf ("%lf\n", ((float)t.tv_sec + ((float)t.tv_usec)/1000000));
+	}
 
-	return 0;
 }

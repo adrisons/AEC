@@ -1,25 +1,8 @@
-default: normal
-	
-normal: compile execute
-
-
-normal2: compile2 execute
-
-
-gdb: compile_gdb execute_gdb
-
-compile_gdb: 
-	mpicc -g -o radix radix_parallel.c
-
-
-execute_gdb:
-	mpirun -np 2 xterm -e gdb ./radix
-
-
+default: compile execute
 
 compile: 
-	mpicc -o radix radix_parallel.c
+	mpicc -o radix_mpi radix_mpi.c
 
 
 execute:
-	mpirun -n 2 ./radix 12
+	mpirun -n 2 ./radix_mpi 1000000

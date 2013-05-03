@@ -7,10 +7,8 @@
 
 void radixsor(int *a, int n){
 int i, m = a[0], exp = 1;
-struct timeval t0, t1, t;
 int *b = malloc(MAX*sizeof(int)+1);
 
-assert (gettimeofday (&t0, NULL) == 0);
 
 for (i = 0; i < n; i++){
 	if (a[i] > m){
@@ -32,10 +30,6 @@ while (m / exp > 0){
 	exp *= 10;
 	}
 
-	assert (gettimeofday (&t1, NULL) == 0);
-	timersub(&t1, &t0, &t);
-	printf ("Tiempo      = %ld:%ld(seg:mseg)\n", t.tv_sec, t.tv_usec/1000);
-
 }
  
  
@@ -44,6 +38,10 @@ int main(int argc, char* argv[]){
 	int i;
 	int *array = malloc(MAX*sizeof(int)+1);
 	static int n;
+	struct timeval t0, t1, t;
+
+
+	assert (gettimeofday (&t0, NULL) == 0);
 
 	for (n = 0; n < numElementos; n++){
 		int r = rand()%1000000;
@@ -54,5 +52,11 @@ int main(int argc, char* argv[]){
 		printf("%d ", array[i]);
 	}
 */
+
+	assert (gettimeofday (&t1, NULL) == 0);
+	timersub(&t1, &t0, &t);
+
+	printf ("%ld:%ld", t.tv_sec, t.tv_usec/1000);
+
 	return 0;
 }
