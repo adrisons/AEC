@@ -55,8 +55,9 @@ int main(int argc, char* argv[]){
 
 	assert (gettimeofday (&t1, NULL) == 0);
 	timersub(&t1, &t0, &t);
+	printf("%ld.%06ld", (long int)t.tv_sec, (long int)t.tv_usec);
 
-	printf ("%ld:%ld", t.tv_sec, t.tv_usec/1000);
+//	printf ("%ld:%ld", t.tv_sec, t.tv_usec/1000);
 
 	return 0;
 }

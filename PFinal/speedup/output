@@ -1,2 +1,5 @@
-numElementos	Tiempo seq(seg:mseg)	Tiempo mpi(seg:mseg)	Speedup
-10000 	0:2				0:2 / 1:75
+numElementos    t_seq(seg)      t_mpi(seg)      speedup_mpi     t_openmp+mpi(seg)    speedup_total
+--------------------------------------------------------------------------------------------------
+500             0.0001          1.0301          0.00            0.0000               0.00
+1000            0.0003          1.0299          0.00            0.0000               0.00
+5000            0.0012          1.0313          0.00            0.0000               0.00

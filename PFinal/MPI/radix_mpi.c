@@ -245,10 +245,10 @@ int main(int argc, char* argv[]){
 
 	if (myrank == 0){
 
-		printf("Sol: \n");
-		print_array(a, n, 0);
+//		printf("Sol: \n");
+//		print_array(a, n, 0);
     	MPI_Recv(a, n, MPI_INT, 1, 123, MPI_COMM_WORLD, &status);
-    	print_array(a, n, 1);
+//    	print_array(a, n, 1);
 
    	}else{
 		MPI_Send(a, n, MPI_INT, 0, 123, MPI_COMM_WORLD);
@@ -261,7 +261,9 @@ int main(int argc, char* argv[]){
 	if (myrank == 0){
 		assert (gettimeofday (&t1, NULL) == 0);
 		timersub(&t1, &t0, &t);
-		printf("%ld.%06ld\n", (long int)t.tv_sec, (long int)t.tv_usec);
+		printf("%ld.%06ld", (long int)t.tv_sec, (long int)t.tv_usec);
+//		printf ("Tiempo      = %ld:%ld(seg:mseg)\n", t.tv_sec, t.tv_usec/1000);
+
 
 	}
 
