@@ -1,0 +1,92 @@
+Radix sort es un algoritmo de ordenación cuyo rendimiento temporal en el peor caso es de $\mathcal{O}(kN)$ y de memoria $\mathcal{O}(k + N)$
+
+Su principal característica es la utilización de un array de 10 posiciones denominado \emph{bucket}, inicializado en cada una de las iteraciones a 0 y que guarda en cada una de las posiciones del array el número de apariciones de cada una de las cifras coincidentes con la propia posición del \emph{bucket}.
+
+Este \emph{bucket} es utilizado para calcular el propio \emph{bucket} acumulado con el que asignaremos una posición diferente a cada uno de los elementos en el array en \emph{b}.
+
+En cada una de las iteraciones tenemos una variable llamada \emph{exp} que se irá multiplicando por 10 y que nos indica la cifra que miraremos en ese instante y que luego copiaremos a \emph{a}, que es el array inicial.
+
+Este es el código de dicho algoritmo:
+
+\begin{lstlisting}
+// Uso del bucket en radix sort
+while (m / exp > 0){
+	int bucket[10] = {0};
+	for (i = 0; i < n; i++){
+		bucket[a[i] / exp % 10]++;
+	}
+	for (i = 1; i < 10; i++)
+		bucket[i] += bucket[i - 1];
+	for (i = n - 1; i >= 0; i--)
+		b[--bucket[a[i] / exp % 10]] = a[i];
+	for (i = 0; i < n; i++){
+		a[i] = b[i];
+	}
+	exp *= 10;
+}
+\end{lstlisting}
+
+\newpage
+\subsection{Ejemplo del algoritmo}
+
+Vector inicial: 25 57 48 37 12 92 86 33\\
+
+Los elementos quedarían ordenados de la siguiente manera:\\
+0:\\
+1:\\
+2: 1\underline{2} 9\underline{2}\\
+3: 3\underline{3}\\
+4:\\
+5: 2\underline{5}\\
+6: 8\underline{6}\\
+7: 5\underline{7} 3\underline{7}\\
+8: 4\underline{8}\\
+9:\\
+
+El bucket, en vez de ser lo descrito anteriormente, quedaría con el número de elementos asignados a cada posición:\\
+\\
+0: 0\\
+1: 0\\
+2: 2\\
+3: 1\\
+4: 0\\
+5: 1\\
+6: 1\\
+7: 2\\
+8: 1\\
+9: 0\\
+\\
+
+El vector después de esta iteración sería: 12 92 33 25 86 57 37 48\\
+\newpage
+En la siguiente iteración nos centramos el la segunda cifra de cada uno de los elementos:\\
+\\
+0:\\
+1: \underline{1}2\\
+2: \underline{2}5\\
+3: \underline{3}3 \underline{3}7\\
+4: \underline{4}8\\
+5: \underline{5}7\\
+6: \\
+7: \\
+8: \underline{8}6\\
+9: \underline{9}2\\
+
+En esta ocasión el bucket quedaría de la siguiente forma:
+\\
+0: 0\\
+1: 1\\
+2: 1\\
+3: 2\\
+4: 1\\
+5: 1\\
+6: 0\\
+7: 0\\
+8: 1\\
+9: 1\\
+
+En este ejemplo el vector ya ha quedado ordenado: 12 25 33 37 48 57 86 92\\
+
+\newpage
+
+\subsection{La complejidad del algoritmo}

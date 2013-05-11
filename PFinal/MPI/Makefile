@@ -5,4 +5,4 @@ compile:
 
 
 execute:
-	mpirun -n 2 ./radix_mpi 1000000
+	mpirun -n 2 ./radix_mpi 20

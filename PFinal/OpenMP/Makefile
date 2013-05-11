@@ -1,8 +1,8 @@
 default: compile execute
 
 compile: 
-	mpicc -o radix_mpi radix_mpi.c
+	mpicc -o radix_par radix_parallel.c
 
 
 execute:
-	mpirun -n 2 ./radix_mpi 1000000
+	mpirun -n 2 ./radix_par 2000000

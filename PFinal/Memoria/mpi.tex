@@ -1,0 +1,45 @@
+%\input{./mpi/main}
+%\input{./mpi/radixsort}
+
+Como este código es muy complicado de paralelizar, limitaremos el problema a dos procesadores, para simplificar el paso de datos.
+
+
+Antes de comenzar a ordenar los datos es necesario calcular el máximo de todos los elementos, pero es necesario que todos los procesos conozcan este dato, ya que influye en el número de ejecuciones del algortmo.
+Esto se hace con MPI\_Allreduce, que realiza la operación indicada (MPI\_MAX en este caso) y comparte el resultado con todos los procesos.
+\begin{lstlisting}[frame=single]
+	m = maximo(a, n);
+	MPI_Allreduce(&m, &m, 1, MPI_INT, MPI_MAX, MPI_COMM_WORLD);
+\end{lstlisting}
+
+
+También es necesario compartir el bucket en cada iteración, puesto que se recalcula cada vez, y se ordena en función de su suma acumulada.
+
+El trabajo de realizar la suma acumulativa lo hace el proceso 1 y le manda el resultado al 0.
+
+Al utilizar el bucket acumulado para calcular las posiciones ordenadas de los elementos del array final, se hace desde el final al principio del array a ordenar por lo que, al paralelizarlo, es necesario secuencializar los procesos de modo que sigan el mismo orden que el secuencial. Para ello, los elementos se envían en orden inverso de procesos (desde el proceso n al $n-1$, del $n-1$ al $n-2$, ...).
+
+% a_intercambio
+
+% cálculo de las posiciones del array de intercambio
+
+\begin{lstlisting}[frame=single]
+	// Usando el bucket se guardan en b los elementos de a ordenados
+	for (i = n - 1; i >= 0; i--){
+		
+		int pos = (--bucket[a[i] / exp % 10]);
+
+		rank_recv = floor(pos / n);
+		rank_send = myrank;
+
+		if( rank_send == rank_recv ){ 
+			if(myrank==1)
+				pos = pos % n;
+			b[ pos ] = a[i];
+		}else{
+			if(myrank==0)
+				pos = pos % n;				
+			a_intercambio [pos] = a[i];
+		}
+	}		
+\end{lstlisting}
+
