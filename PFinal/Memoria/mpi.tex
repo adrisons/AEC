@@ -55,3 +55,12 @@ if(myrank==1){
 \end{lstlisting}
 
 Al final de cada iteración del bucle, cada proceso recibe el \texttt{a\_intercambio} del otro proceso, lo guarda en su array \texttt{b} local y, finalmente, lo almacena en \texttt{a}.
+
+
+Como se puede ver en la gráfica de la figura \ref{grafica_mpi}, no se consiguen mejoras en este ejemplo usando \texttt{MPI} con dos procesadores. Esto se debe al gran paso de datos entre procesadores, la secuencialización de un trozo del código y el hecho de sólo usar dos procesadores. Además, cuando mayor sea el máximo elemento del array a ordenar, más iteraciones tiene que hacer el algoritmo, mayor paso de datos en la paralelización \texttt{MPI} y mayor ineficiencia.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=1\textwidth]{./res/grafica_mpi}
+	\label{grafica_mpi}
+\end{figure}
