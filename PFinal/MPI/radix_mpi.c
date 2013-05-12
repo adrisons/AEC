@@ -235,7 +235,7 @@ int main(int argc, char* argv[]){
 
 	int *a = malloc(n*sizeof(int));
 
-	inicializar_a_creciente(&a[0], n, myrank);
+	inicializar_array_random(&a[0], n);
 
 
 	// Ejecuta el algoritmo de ordenamiento

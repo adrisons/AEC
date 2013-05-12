@@ -29,7 +29,7 @@ void radixsort_parallel(int* a, int elemTot, int p, int myrank){
 			for (i = 1; i < 10; i++)
 				bucket[i] += bucket[i - 1];
 		}
-		// El P0 se queda esperando por los datos del padre
+		// El P0 se queda esperando por los datos del P1
 		if(myrank==0){
 			MPI_Recv(a_intercambio, elemTot, MPI_INT, 1, 3, MPI_COMM_WORLD, &status);
 			MPI_Recv(&bucket[0], 10, MPI_INT, 1, 4, MPI_COMM_WORLD, &status);
@@ -60,11 +60,11 @@ void radixsort_parallel(int* a, int elemTot, int p, int myrank){
 				a_intercambio [pos] = a[i];
 			}
 		}
-		// El P1 envia el array de intercambio al padre para continuar ordenando
+		// El P0 envia el array de intercambio al P1 para continuar ordenando
 		if(myrank==0){
 			MPI_Send(a_intercambio, elemTot, MPI_INT, 1, 5, MPI_COMM_WORLD);
 		}
-		// El proceso padre envia los elementos que le corresponden del proceso hijo
+		// El proceso 1 envia los elementos que le corresponden del proceso 0
 		if(myrank==1){
 			MPI_Send(a_intercambio, elemTot, MPI_INT, 0, 3, MPI_COMM_WORLD);
 			MPI_Send(&bucket[0], 10, MPI_INT, 0, 4, MPI_COMM_WORLD);

@@ -1,5 +1,5 @@
 \documentclass[a4paper]{article}
-
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[spanish]{babel}
 \usepackage{mathtools}
@@ -8,6 +8,7 @@
 \usepackage{multicol}
 \usepackage{listings}
 \usepackage{color}
+\usepackage{amsfonts}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
@@ -82,13 +83,13 @@
   \input{./introduccion}	
 \section{Paralelización con MPI}
 	\input{./mpi}
-\section{Paralelización con OpenMP}
+%\section{Paralelización con OpenMP}
 %	\input{./openmp}
-\section{Conclusiones}
+%\section{Conclusiones}
 %	\input{./conclusiones}
-\subsection{Opinión personal}
+%\subsection{Opinión personal}
 %	\input{./opinion}
-
+\clearpage
 \appendix
 
 \section{Código secuencial}\label{secuencial.c}

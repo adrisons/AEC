@@ -5,4 +5,4 @@ compile: memoria.tex
 	pdflatex memoria.tex
 
 clean:
-	rm -f *.log *.toc *.aux *.lof
+	rm -f *.log *.toc *.aux *.lof ./memoria.out
