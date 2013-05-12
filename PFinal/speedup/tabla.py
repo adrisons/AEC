@@ -24,7 +24,7 @@ n17=100000000000
 n18=500000000000
 n19=1000000000000
 
-numElementos = [n1,n2,n3]
+numElementos = [n0,n1,n2,n3,n4]
 
 print "%-*s %-*s %-*s %-*s %-*s %s\n" % (15,"numElementos",15,"t_seq(seg)",15,"t_mpi(seg)",15,"speedup_mpi",20,"t_openmp+mpi(seg)","speedup_total"),
 print "--------------------------------------------------------------------------------------------------"
