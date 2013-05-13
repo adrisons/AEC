@@ -82,24 +82,32 @@
 
 \section{Introducción}
   \input{./introduccion}	
+
+\clearpage
 \section{Paralelización con MPI}
 	\input{./mpi}
-%\section{Paralelización con OpenMP}
-%	\input{./openmp}
-%\section{Conclusiones}
-%	\input{./conclusiones}
-%\subsection{Opinión personal}
-%	\input{./opinion}
+
+\clearpage
+\section{Paralelización con OpenMP}
+	\input{./openmp}
+\section{Conclusiones}
+	\input{./conclusiones}
+
 \clearpage
 \appendix
 
 \section{Código secuencial}\label{secuencial.c}
 \lstinputlisting[language=C]{./src/secuencial.c}
 
-
 \section{main con MPI}\label{main.c}
 \lstinputlisting[language=C]{./src/main.c}
 
 \section{Implementación radixsort con MPI}\label{radixsort_mpi.c}
 \lstinputlisting[language=C]{./src/radixsort_mpi.c}
+
+\section{main con OpenMP}\label{main.c}
+\lstinputlisting[language=C]{./src/main_openmp.c}
+
+\section{Implementación radixsort con OpenMP}\label{radixsort_mpi.c}
+\lstinputlisting[language=C]{./src/radixsort_openmp.c}
 \end{document}
