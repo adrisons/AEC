@@ -1,8 +1,11 @@
 default: compile execute
 
 compile: 
-	mpicc -o radix_par radix_parallel.c
-
+	gcc  -O3 -fopenmp -o radix_openmp radix_openmp.c -lm
 
 execute:
-	mpirun -n 2 ./radix_par 2000000
+	export OMP_NUM_THREADS=30
+	./radix_openmp 10000
+
+clean:
+	rm radix_openmp
