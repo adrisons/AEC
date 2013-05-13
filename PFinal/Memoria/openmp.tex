@@ -12,16 +12,18 @@ Por último, al copiar los datos del array auxiliar \emph{b} en el array princip
 \lstinputlisting[language=C]{./src/copia_datos.c}
 
 
-Aplicando estas pequeñas modificaciones se aprecia una gran mejora en el tiempo de ejecución con respecto al original, y eso que la parte principal no se puede paralelizar (la que hace uso del bucket).
+Aplicando estas pequeñas modificaciones se aprecia una gran mejora en el tiempo de ejecución con respecto al original (Figura \ref{Comparacion_tiempos} y Figura \ref{Comparacion_speedups}), y eso que la parte principal no se puede paralelizar (la que hace uso del bucket).
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.3\textwidth]{./res/Comparacion_tiempos}
+	\caption{Comparación tiempos}
 	\label{Comparacion_tiempos}
 \end{figure}
 
 \begin{figure}[h!]
 	\centering
 	\includegraphics[width=1.3\textwidth]{./res/Comparacion_speedups}
+	\caption{Comparación speedups}
 	\label{Comparacion_speedups}
 \end{figure}
